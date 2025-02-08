@@ -71,8 +71,8 @@ def classify_number(n: int):
     }
 
 
-@app.get("/api/classify-number")
-def get_number_info(number: str = Query(..., description="Number to classify")):
+@app.get("/api/classify-number/{number}")
+def get_number_info(number: str):
     try:
         num = int(number)
         return classify_number(num)

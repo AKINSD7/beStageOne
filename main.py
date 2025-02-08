@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import math
 import requests
 import uvicorn
+import httpx
 
 app = FastAPI()
 
@@ -24,9 +25,15 @@ def home():
 def is_prime(n: int) -> bool:
     if n < 2:
         return False
-    for i in range(2, int(math.sqrt(n)) + 1):
-        if n % i == 0:
+    if n in (2, 3):
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0:
             return False
+        i += 6  # Skip even numbers
     return True
 
 # Function to check if a number is an Armstrong number
@@ -36,13 +43,15 @@ def is_armstrong(n: int) -> bool:
     return sum(d ** power for d in digits) == n
 
 # Function to get a fun fact about the number
-def get_fun_fact(n: int) -> str:
+async def get_fun_fact(n: int) -> str:
     url = f"http://numbersapi.com/{n}/math?json"
     try:
-        response = requests.get(url, timeout=5)
-        if response.status_code == 200:
-            return response.json().get("text", f"{n} is an interesting number!")
-    except requests.RequestException:
+        async with httpx.AsyncClient(timeout=3) as client:
+            response = await client.get(url)
+            if response.status_code == 200:
+                data = response.json()
+                return data.get("text", f"{n} is an interesting number!")
+    except httpx.RequestError:
         return f"{n} is an interesting number!"
     return f"{n} is an interesting number!"
 

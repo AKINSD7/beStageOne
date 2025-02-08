@@ -9,7 +9,7 @@ app = FastAPI()
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -62,7 +62,7 @@ def classify_number(n: int):
         "fun_fact": get_fun_fact(n),
     }
 
-# ✅ **Updated API Endpoint Using Path Parameters**
+
 @app.get("/api/classify-number/{number}")
 def get_number_info(number: str):
     try:

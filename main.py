@@ -49,10 +49,17 @@ def get_fun_fact(n: int) -> str:
     return f"{n} is an interesting number!"
 
 def classify_number(n: int):
-    properties = []
-    if is_armstrong(n):
-        properties.append("armstrong")
-    properties.append("odd" if n % 2 != 0 else "even")
+    is_armstrong_num = is_armstrong(n)
+    is_odd = n % 2 != 0
+
+    if is_armstrong_num and is_odd:
+        properties = ["armstrong", "odd"]
+    elif is_armstrong_num and not is_odd:
+        properties = ["armstrong", "even"]
+    elif not is_armstrong_num and is_odd:
+        properties = ["odd"]
+    else:
+        properties = ["even"]
 
     return {
         "number": n,
@@ -66,10 +73,11 @@ def classify_number(n: int):
 
 @app.get("/api/classify-number")
 def get_number_info(number: str = Query(..., description="Number to classify")):
-    if not number.lstrip("-").isdigit():  # Check if input is a valid integer
+    try:
+        num = int(number)
+        return classify_number(num)
+    except ValueError:
         raise HTTPException(status_code=400, detail={"number": number, "error": True})
-
-    return classify_number(int(number))
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

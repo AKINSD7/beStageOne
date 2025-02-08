@@ -9,17 +9,18 @@ app = FastAPI()
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],  # Allow all origins
     allow_credentials=True,
-    allow_methods=["*"],  
-    allow_headers=["*"], 
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
 )
 
-
+# Root route to check if API is running
 @app.get("/")
 def home():
     return {"message": "API is working!"}
 
+# Check if a number is prime
 def is_prime(n: int) -> bool:
     if n < 2:
         return False
@@ -28,11 +29,13 @@ def is_prime(n: int) -> bool:
             return False
     return True
 
+# Check if a number is an Armstrong number
 def is_armstrong(n: int) -> bool:
     digits = [int(d) for d in str(n)]
     power = len(digits)
     return sum(d ** power for d in digits) == n
 
+# Get fun fact from Numbers API
 def get_fun_fact(n: int) -> str:
     try:
         response = requests.get(f"http://numbersapi.com/{n}/math?json")
@@ -42,12 +45,13 @@ def get_fun_fact(n: int) -> str:
         pass
     return f"{n} is an interesting number!"
 
+# Function to classify a number
 def classify_number(n: int):
     properties = []
     if is_armstrong(n):
         properties.append("armstrong")
     properties.append("odd" if n % 2 != 0 else "even")
-    
+
     return {
         "number": n,
         "is_prime": is_prime(n),
@@ -57,13 +61,14 @@ def classify_number(n: int):
         "fun_fact": get_fun_fact(n)
     }
 
+# API Endpoint for Classifying Numbers
 @app.get("/api/classify-number")
 def get_number_info(number: str = Query(..., description="Number to classify")):
     try:
-        num = int(number)
-        return classify_number(num)
+        num = int(number)  # Convert input to integer
+        return classify_number(num)  # Return classification result
     except ValueError:
-        raise HTTPException(status_code=400, detail={"number": number, "error": True})
+        raise HTTPException(status_code=400, detail={"number": number, "error": True})  # Handle invalid input
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

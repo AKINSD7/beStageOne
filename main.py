@@ -6,21 +6,23 @@ import uvicorn
 
 app = FastAPI()
 
-# Enable CORS
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Root route to check API status
+
+
 @app.get("/")
 def home():
     return {"message": "API is working!"}
 
-# Function to check if a number is prime
+
+
 def is_prime(n: int) -> bool:
     if n < 2:
         return False
@@ -29,13 +31,13 @@ def is_prime(n: int) -> bool:
             return False
     return True
 
-# Function to check if a number is an Armstrong number
+
+
 def is_armstrong(n: int) -> bool:
     digits = [int(d) for d in str(n)]
     power = len(digits)
     return sum(d ** power for d in digits) == n
 
-# Function to get a fun fact about the number
 def get_fun_fact(n: int) -> str:
     url = f"http://numbersapi.com/{n}/math?json"
     try:
@@ -43,10 +45,9 @@ def get_fun_fact(n: int) -> str:
         if response.status_code == 200:
             return response.json().get("text", f"{n} is an interesting number!")
     except requests.RequestException:
-        return f"{n} is an interesting number!"
+        pass
     return f"{n} is an interesting number!"
 
-# Function to classify the number
 def classify_number(n: int):
     properties = []
     if is_armstrong(n):
@@ -62,7 +63,7 @@ def classify_number(n: int):
         "fun_fact": get_fun_fact(n),
     }
 
-# API Endpoint for classifying numbers
+
 @app.get("/api/classify-number")
 def get_number_info(number: str = Query(..., description="Number to classify")):
     if not number.lstrip("-").isdigit():  # Check if input is a valid integer

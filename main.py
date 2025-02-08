@@ -15,6 +15,11 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
+# Root route to check if API is running
+@app.get("/")
+def home():
+    return {"message": "API is working!"}
+
 def is_prime(n: int) -> bool:
     if n < 2:
         return False
